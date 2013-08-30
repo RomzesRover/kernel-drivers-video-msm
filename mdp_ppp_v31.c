@@ -509,7 +509,6 @@ void mdp_set_scale(MDPIBUF *iBuf,
 	if (!inputRGB)
 		ppp_scale_config |= BIT(6);
 
-	if (iBuf->mdpImg.mdpOp & MDPOP_ASCALE) {
 		if (iBuf->mdpImg.mdpOp & MDPOP_ROT90) {
 			dst_roi_width_scale = dst_roi_height;
 			dst_roi_height_scale = dst_roi_width;
@@ -783,7 +782,6 @@ void mdp_set_scale(MDPIBUF *iBuf,
 		} else {
 			iBuf->mdpImg.mdpOp &= ~(MDPOP_ASCALE);
 		}
-	}
 }
 
 void mdp_adjust_start_addr(uint8 **src0,

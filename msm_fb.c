@@ -671,7 +671,7 @@ int calc_fb_offset(struct msm_fb_data_type *mfd, struct fb_info *fbi, int bpp)
 	int remainder, yres, offset;
 
 	if (align_buffer){
-       		 return fbi->var.xoffset * bpp + fbi->var.yoffset * fbi->fix.line_length;
+       		 return (fbi->var.xoffset * bpp + fbi->var.yoffset * fbi->fix.line_length) * 4;
     	}
 
 	yres = panel_info->yres;
@@ -792,10 +792,13 @@ static __u32 msm_fb_line_length(__u32 fb_index, __u32 xres, int bpp)
 	   is writing directly to fb0, the framebuffer pitch
 	   also needs to be 32 pixel aligned */
 
-	if (fb_index == 0)
-		return ALIGN(xres, 32) * bpp;
-	else
+	if (fb_index == 0){
+	printk(KERN_INFO "msm_fb_line_length_0=%d\n", ALIGN(xres, 32) * bpp);	
+	return ALIGN(xres, 32) * bpp;
+	}else{
+	printk(KERN_INFO "msm_fb_line_length_x=%d\n", xres * bpp);
 		return xres * bpp;
+	}
 }
 
 static int msm_fb_register(struct msm_fb_data_type *mfd)
@@ -979,10 +982,10 @@ static int msm_fb_register(struct msm_fb_data_type *mfd)
 	var->pixclock = mfd->panel_info.clk_rate;
 	mfd->var_pixclock = var->pixclock;
 
-	var->xres = panel_info->xres;
-	var->yres = panel_info->yres;
-	var->xres_virtual = panel_info->xres;
-	var->yres_virtual = panel_info->yres * mfd->fb_page +
+	var->xres = 240;
+	var->yres = 400;
+	var->xres_virtual = 240;
+	var->yres_virtual = 400 * mfd->fb_page +
 		((PAGE_SIZE - remainder)/fix->line_length) * mfd->fb_page;
 	var->bits_per_pixel = bpp * 8;	/* FrameBuffer color depth */
 	if (mfd->dest == DISPLAY_LCD) {
@@ -1529,8 +1532,10 @@ static int msm_fb_set_par(struct fb_info *info)
 		mfd->var_pixclock = var->pixclock;
 		blank = 1;
 	}
-	mfd->fbi->fix.line_length = msm_fb_line_length(mfd->index, var->xres,
-						       var->bits_per_pixel/8);
+	mfd->fbi->fix.line_length = msm_fb_line_length(mfd->index, var->xres, var->bits_per_pixel/8);
+
+	printk(KERN_INFO "fix.line_length (first) = %d\n", msm_fb_line_length(mfd->index, var->xres,
+						       var->bits_per_pixel/8));
 
 	if (blank) {
 		msm_fb_blank_sub(FB_BLANK_POWERDOWN, info, mfd->op_enable);
