@@ -792,13 +792,10 @@ static __u32 msm_fb_line_length(__u32 fb_index, __u32 xres, int bpp)
 	   is writing directly to fb0, the framebuffer pitch
 	   also needs to be 32 pixel aligned */
 
-	if (fb_index == 0){
-	printk(KERN_INFO "msm_fb_line_length_0=%d\n", ALIGN(xres, 32) * bpp);	
-	return ALIGN(xres, 32) * bpp;
-	}else{
-	printk(KERN_INFO "msm_fb_line_length_x=%d\n", xres * bpp);
+	if (fb_index == 0)
+		return ALIGN(xres, 32) * bpp;
+	else
 		return xres * bpp;
-	}
 }
 
 static int msm_fb_register(struct msm_fb_data_type *mfd)
@@ -1532,10 +1529,9 @@ static int msm_fb_set_par(struct fb_info *info)
 		mfd->var_pixclock = var->pixclock;
 		blank = 1;
 	}
-	mfd->fbi->fix.line_length = msm_fb_line_length(mfd->index, var->xres, var->bits_per_pixel/8);
+	mfd->fbi->fix.line_length = msm_fb_line_length(mfd->index, var->xres,
+						       var->bits_per_pixel/8);
 
-	printk(KERN_INFO "fix.line_length (first) = %d\n", msm_fb_line_length(mfd->index, var->xres,
-						       var->bits_per_pixel/8));
 
 	if (blank) {
 		msm_fb_blank_sub(FB_BLANK_POWERDOWN, info, mfd->op_enable);

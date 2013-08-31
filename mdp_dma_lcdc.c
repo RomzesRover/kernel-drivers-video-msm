@@ -209,8 +209,6 @@ int mdp_lcdc_on(struct platform_device *pdev)
 	/* buffer ystride */
 	MDP_OUTP(MDP_BASE + dma_base + 0xc, fbi->fix.line_length*2);
 
-	printk(KERN_INFO "fix.line_length (second) = %d\n", 960);
-
 	/* x/y coordinate = always 0 for lcdc */
 	MDP_OUTP(MDP_BASE + dma_base + 0x10, 0);
 	/* dma config */
